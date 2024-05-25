@@ -1,12 +1,49 @@
-import React from 'react'
+import React,{ useEffect,useState } from "react"
+
+
 
 const Myprofile = () => {
+    
+
+    const goBack = () => {
+       history.back();
+      };
+    
+    const [profileData, setProfileData] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+    
+            try {
+              const raw = await fetch(
+                `https://utsarvajewels.com/api/crud?get_profiledata&token=${token}`
+              );
+              const rawjson = await raw.json();
+      
+              if (rawjson) {
+                setProfileData(rawjson);
+                
+              }
+            } catch (error) {
+              console.error("Error fetching data:", error);
+            }
+          };
+
+        const token = localStorage.getItem('token');
+
+        if (token && token !=="") {
+            fetchData();
+        }else{
+            window.location.href = '/';
+        }
+      }, []);
+
     return (
         <>
             <div className="p-3 shadow-sm bg-warning danger-nav osahan-home-header">
                 <div className="font-weight-normal mb-0 d-flex align-items-center">
                     <h6 className="fw-normal mb-0 text-dark d-flex align-items-center">
-                        <a className="text-dark me-3 fs-4" href="#!">
+                        <a className="text-dark me-3 fs-4" href="#!" onClick={goBack}>
                             <i className="bi bi-chevron-left" />
                         </a>
                         My Profile
@@ -37,7 +74,7 @@ const Myprofile = () => {
                         <input
                             type="text"
                             className="form-control"
-                            defaultValue="<?php echo $row['cus_name'] ?>"
+                            defaultValue={profileData.cus_name}
                             placeholder="Enter Customer Name"
                             name="Customername"
                             id="Customername"
@@ -60,7 +97,7 @@ const Myprofile = () => {
                         <input
                             type="text"
                             className="form-control"
-                            defaultValue="<?php echo $row['cus_mobile'] ?>"
+                            defaultValue={profileData.cus_mobile}
                             name="customerMobile"
                             id="customerMobile"
                             placeholder="Phone No"
@@ -79,8 +116,8 @@ const Myprofile = () => {
                         </span>
                         <input
                             type="text"
-                            className="form-control"
-                            defaultValue="<?php echo $row['company_name'] ?>"
+                            className="form-control"                           
+                            defaultValue={profileData.company_name}
                             name="Companyname"
                             id="Companyname"
                             placeholder="Company Name"
@@ -104,7 +141,8 @@ const Myprofile = () => {
                             placeholder="Enter Your Address"
                             required=""
                             disabled=""
-                            defaultValue={"<? echo $row['cus_address'] ?>"}
+                            defaultValue={profileData.cus_address}
+                            
                         />
                     </div>
                 </div>
@@ -122,7 +160,7 @@ const Myprofile = () => {
                         <input
                             type="text"
                             className="form-control"
-                            defaultValue="<? echo $row['cus_phone'] ?>"
+                            defaultValue={profileData.cus_phone}
                             name="customerPhone"
                             id="customerPhone"
                             placeholder="TelePhone No"
@@ -145,7 +183,7 @@ const Myprofile = () => {
                         <input
                             type="text"
                             className="form-control"
-                            defaultValue="<? echo $row['cus_city'] ?>"
+                            defaultValue={profileData.cus_city}
                             name="customerCity"
                             id="customerCity"
                             placeholder="Enter City Name"
@@ -168,7 +206,7 @@ const Myprofile = () => {
                         <input
                             type="text"
                             className="form-control"
-                            defaultValue="<? echo $row['cus_website'] ?>"
+                            defaultValue={profileData.cus_website}
                             name="customerWebsite"
                             id="customerWebsite"
                             placeholder="https://example.com/"
@@ -191,7 +229,7 @@ const Myprofile = () => {
                         <input
                             type="text"
                             className="form-control"
-                            defaultValue="<? echo $row['cus_email'] ?>"
+                            defaultValue={profileData.cus_email}
                             name="customerEmail"
                             id="customerEmail"
                             placeholder="E-Mail"
@@ -211,7 +249,7 @@ const Myprofile = () => {
                         <input
                             type="text"
                             className="form-control"
-                            defaultValue="<? echo $row['cus_pan'] ?>"
+                            defaultValue={profileData.cus_pan}
                             style={{ textTransform: "uppercase" }}
                             name="customerPan"
                             id="customerPan"
@@ -232,7 +270,7 @@ const Myprofile = () => {
                         <input
                             type="text"
                             className="form-control"
-                            defaultValue="<? echo $row['cus_gst'] ?>"
+                            defaultValue={profileData.cus_gst}
                             style={{ textTransform: "uppercase" }}
                             name="customerGst"
                             id="customerGst"
@@ -245,10 +283,10 @@ const Myprofile = () => {
                 <div className="col-12 mb-4">
                     <center>
                         <button
-                            type="button"
-                            onclick="javasscript:history.back()"
+                            type="button"                            
                             id="back"
                             name="back"
+                            onClick={goBack}
                             className="btn btn-primary btn-lg"
                         >
                             Back

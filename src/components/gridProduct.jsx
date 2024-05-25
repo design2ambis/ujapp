@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+import AjaxLoader from "./ajaxLoader";
+import Swal from 'sweetalert2';
 
 const GridProduct = (props) => {
+   
     const [products, setProducts] = useState([]);
     const [isCount, setCount] = useState(false);
     const [pages, setPage] = useState([]);
+    const [Loader, setLoad] = useState([true]);
 
 
     useEffect(() => {
 
         const fetchData = async () => {
+            setLoad(true);
             try {
                 const proRes = await fetch(
                     `https://utsarvajewels.com/api/crud?get_product_details_overall&cat=${props.cat}&&subcat=${props.subcat}&&page=${props.page}`
@@ -18,16 +22,17 @@ const GridProduct = (props) => {
                 const proData = await proRes.json();
 
                 if (proData.status.status == 200) {
-                    setCount(true);
+                    setCount(false);
                     setProducts(proData.data);
                     setPage(proData.status.page);
                 } else {
-                    setCount(false);
+                    setCount(true);
                 }
 
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
+            setLoad(false)
         };
 
         fetchData();
@@ -38,73 +43,106 @@ const GridProduct = (props) => {
     }, [props])
 
     var minuspage, addpage = "";
-  var currentpage = props.page;
+    var currentpage = props.page;
 
 
-  if (currentpage == 1) {
-    minuspage = 1
-  } else {
-    minuspage = parseInt(currentpage) - 1;
-  }
-  addpage = parseInt(currentpage) + 1;
+    if (currentpage == 1) {
+        minuspage   = 1;
+    } else {
+        minuspage   = parseInt(currentpage) - 1;
+    }
+        addpage     = parseInt(currentpage) + 1;
 
-    //   document.title = `Nivsjewels - ${props.cat.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')} | ${props.subcat.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}`;
+    if(Loader){
+        return <AjaxLoader />
+    }
+
+    if(isCount){
+        return <h5 className="text-center margin-5 mt-5">No data</h5>
+    }
+
+    const  addToCart =  (async (pid,jcat,wei,siz)=>{
+
+        var body = {"pid":pid,
+                    "jewellcat":jcat,
+                    "weight":wei,
+                    "size":siz,
+                    "qty":'1',
+                    "token":localStorage.getItem("token"),
+                    "add_cart":"add",
+                    };
+
+        var req = await fetch(`https://utsarvajewels.com/api/crud`,{
+                    method: "POST",body: JSON.stringify(body)});
+        var res   = await req.json();
+        
+            if(res.status==true){
+                Swal.fire({
+                    icon: "success",
+                    title: "Welcome",
+                    text: "Added to Cart"
+                  })
+            }
+        
+    })
 
     return (
         <>
-            <div className="row">
+            <div className="row pb-6">
                 
         
             {products.map((pro, index) => (
+               
                 <div className="text-dark col-6 px-0 border-bottom border-end position-relative" key={index}>
+                    <Link to={`/product/${pro.no}`}  style={{textDecoration: 'none'}}  >
                     <div className="list_item_gird m-0 bg-white listing-item">
-                        <div className="list-item-img p-4" style={{ cursor: "pointer" }}>
+                        <div className="list-item-img p-2" style={{ cursor: "pointer" }}>
                             <img src={pro.image} alt={pro.no} title={pro.no} className="img-fluid p-3" />
                         </div>
 
-                        <div style={{ cursor: "pointer" }} className="tic-div px-3 pb-3">
+                        <div style={{ cursor: "pointer" }} className="tic-div px-3 pb-1 text-center">
                             <p className="mb-1 text-black">{pro.no}</p>
-                            <h6 className="card-title mt-2 mb-3 text-success fw-bold">Weight : {pro.weight}</h6>
-                            <div className="d-flex align-items-center justify-content-between gap-1">
-                                <div className="size-btn">
-                                    <div className="input-group">
-                                        <a href="#" className="btn btn-light btn-sm border d-flex" data-bs-toggle="modal" data-bs-target="#exampleModala">500g <span><i className="bi bi-chevron-down small ms-2"></i></span></a>
-                                    </div>
-                                </div>
-                                <div className="quantity-btn">
-                                    <div className="input-group input-group-sm border rounded overflow-hiddem">
-                                        <div className="btn btn-light text-success minus border-0 bg-white"><i className="bi bi-dash"></i></div>
-                                        <input type="text" className="form-control text-center box border-0" value="1" placeholder="" aria-label="Example text with button addon" />
-                                        <div className="btn btn-light text-success plus border-0 bg-white"><i className="bi bi-plus"></i></div>
-                                    </div>
-                                </div>
-                            </div>
+                            <h6 className="card-title mt-2 mb-2 text-success fw-bold">Weight : {pro.weight}</h6>
+                           
                         </div>
                     </div>
-
+                    </Link>
 
                     <div className="text-center mb-3">
-                        <a href="#!" className="btn btn-success shadow">Add To Cart</a>
+                        <button type="button"  className="btn btn-success shadow" 
+                            onClick={() =>
+                                  addToCart(
+                                    pro.id,
+                                    pro.jewelcat,
+                                    pro.weight,
+                                    pro.size
+                            )}>Add To Cart
+                        </button>
                     </div>
                 </div>
            
             ))}
 
-            <center className="col-12 mt-2">
-                <nav aria-label="Page navigation example" style={{ marginLeft: "25%" }}>
+            <div className="col-12 mt-2" style={{marginBottom: '80px',justifyContent: 'center',display:'flex'}}>
+                <nav aria-label="Page navigation example">
                     <ul className="pagination">
-                        <li className="page-item"><a className="page-link" href="#!" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                        {/* <li className="page-item"><a className="page-link" href="#!" aria-label="Previous"><span aria-hidden="true">«</span></a></li> */}
 
-                        {pages.map((page, index) => (                            
-                            <li className="page-item active" key={index}>
-                                <Link className="page-link " to={`/shop/${props.cat}/${props.subcat}/${page.i}`} >{page.i}</Link>
-                            </li>                       
-
+                        {pages.map((page, index) => (    
+                        <li className="page-item" key={index}>
+                            {
+                                page.i == props.page ? (                            
+                                    <Link className="page-link pg-active" to={`/shop/${(props.cat.toLowerCase())}/${(props.subcat.toLowerCase())}/${page.i}`} >{page.i}</Link>                            
+                                ):(                            
+                                    <Link className="page-link text-dark" to={`/shop/${(props.cat.toLowerCase())}/${(props.subcat.toLowerCase())}/${page.i}`} >{page.i}</Link>
+                                )
+                            }                  
+                            </li>
                         ))}
-                        <li className="page-item"><a className="page-link" href="#!" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                        {/* <li className="page-item"><a className="page-link" href="#!" aria-label="Next"><span aria-hidden="true">»</span></a></li> */}
                     </ul>
                 </nav>
-            </center>
+            </div>
 
             </div>
         </>

@@ -38,25 +38,26 @@ const RandomProducts = () => {
                 className="img-fluid p-3"
               />
             </div>
-            <div className="tic-div px-3 pb-3">
-              <p className="mb-1 text-black">
-                <b>Design No: </b>
+
+            <div className="tic-div px-3 pb-3" style={{textAlign:'center'}}>
+              <p className="mb-1 text-black">                
                 {ran.design_no}
               </p>
               <h6 className="card-title mt-2 mb-3 text-success fw-bold">
                 Weight: {ran.design_weight}{" "}
               </h6>
             </div>
+
           </Link>
-          <div className="text-center mb-3">
+          {/* <div className="text-center mb-3">
             <a
-              href="javascript:void(0)"
+              href="#!"
               // onclick="addtocartHome('<?php echo $row['design_id'] ?>')"
               className="btn btn-success shadow"
             >
               Add To Cart
             </a>
-          </div>
+          </div> */}
         </div>
       ))}
     </>

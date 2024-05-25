@@ -2,27 +2,40 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import RandomProducts from "../components/randomProducts";
 import SideNavbar from "../components/sideNavbar";
+import BottomNavbar from "../components/bottomNavbar";
 
 const Home = () => {
   const openSidebar = () => {
     document.documentElement.classList.add('hc-nav-yscroll');
     document.body.classList.add('hc-nav-open');
-    var navbar = document.getElementById("main-nav");
+    var navbar = document.getElementById("leftsideNav");
+    
     navbar.classList.add('nav-open');
     navbar.style.visibility = 'visible';
   };
 
+  
+
   const [categories, setCategories] = useState([]); 
+  const [activeCategory, setActiveCategory] = useState(null);
+
+
+
+ 
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    //console.log(token);
+
+   
+
     const fetchData = async () => {
       try {
-        const categoryResponse = await fetch(
-          "https://utsarvajewels.com/api/crud?all_category_list"
-        );
+        const categoryResponse = await fetch(`https://utsarvajewels.com/api/crud?all_category_list&&token=${token}`);
         const categoryData = await categoryResponse.json();
         if (categoryData.option.status === 200) {
           setCategories(categoryData.data);
+          localStorage.setItem("cartCount",categoryData.cartcount.CartCount);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -30,35 +43,46 @@ const Home = () => {
     };
 
     fetchData();
+    
 
-    const getSubcat = async (a,b) => {
-      try {
-        const subcatResponse = await fetch(
-          `https://utsarvajewels.com/api/crud?getSubcategory&&catId=${a}`
-        );
-        const subcatData = await subcatResponse.json();
-        if (subcatData.count >= 0) {          
-            var html = "";
+    
+  }, []);
 
-            for (let i = 0; i < subcatData.Data.length; i++) {
-              // console.log(subcatData.Data[i].name);
+  const getSubcat = async (a,b) => {
 
-              html += `<div class="home-productc">
-                        <a href="/shop/${b}/${subcatData.Data[i].name}">${subcatData.Data[i].name}</a>
-                      </div>`;
+    setActiveCategory(a);
 
-            }
+    try {
+      const subcatResponse = await fetch(
+        `https://utsarvajewels.com/api/crud?getSubcategory&&catId=${a}`
+      );
+      const subcatData = await subcatResponse.json();
+      if (subcatData.count >= 0) {          
+          var html = "";
 
-            document.getElementById("fetch-subcategory").innerHTML = html;
+          for (let i = 0; i < subcatData.Data.length; i++) {
+            // console.log(subcatData.Data[i].name);
 
-            // console.log(subcatData.Data[1].name);
-            
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+            html += `<div class="home-productc">
+                      <a href="/shop/${b.toLowerCase()}/${subcatData.Data[i].sname}/1">${subcatData.Data[i].name}</a>
+                    </div>`;
+
+          }
+
+          document.getElementById("fetch-subcategory").innerHTML = html;
+
+          // console.log(subcatData.Data[1].name);
+          
       }
-    };
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+  
     getSubcat(1,"Mens");
+
   }, []);
 
   return (
@@ -96,7 +120,7 @@ const Home = () => {
         <div style={{ display: "flex", textAlign: "center", borderBottom: "#aba7a7 3px solid" }}>
           {categories.map((category) => (
             <div className="home-productc" key={category.id}>
-              <a href="#!" onClick={() => getSubcat(category.id,category.name)}>
+              <a href="#!" className={activeCategory === category.id ? 'link-active' : ''} onClick={() => getSubcat(category.id,category.cname)}>
                 {category.name}
               </a>
             </div>
@@ -108,14 +132,9 @@ const Home = () => {
         <ul className="nav home-tabs" id="pills-tab" role="tablist">
           <li className="nav-item" role="presentation">
             <button className="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">
-              Grid View
+              Latest Design
             </button>
-          </li>
-          <li className="nav-item" role="presentation">
-            <button className="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">
-              List View
-            </button>
-          </li>
+          </li>          
         </ul>
       </div>
       <div>
@@ -134,34 +153,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <div className="fixed-bottom shadow-sm osahan-footer p-3">
-        <div className="row m-0 footer-menu overflow-hiddem bg-black rounded shadow links">
-          <div className="col-4 p-0 text-center">
-            <Link className="p-2 d-inline-block text-warning w-100" to="/home">
-              <span>
-                <i className="bi bi-house h4" />
-              </span>
-              <p className="m-0 small">HOME</p>
-            </Link>
-          </div>
-          <div className="col-4 p-0 text-center">
-            <Link className="p-2 d-inline-block text-white w-100" to="/cart">
-              <span>
-                <i className="bi bi-basket h4" />
-              </span>
-              <p className="m-0 small">CART</p>
-            </Link>
-          </div>
-          <div className="col-4 p-0 text-center">
-            <Link className="p-2 d-inline-block text-white w-100" to="/myprofile">
-              <span>
-                <i className="bi bi-person h4" />
-              </span>
-              <p className="m-0 small">ACCOUNT</p>
-            </Link>
-          </div>
-        </div>
-      </div>
+      <BottomNavbar />
     </>
   );
 };
