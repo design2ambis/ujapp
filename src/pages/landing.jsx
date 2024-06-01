@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import landingimg from "../../img/sign-in-pana.svg"
 
 const Landing = () => {
     const token = localStorage.getItem("token");
@@ -10,7 +11,7 @@ const Landing = () => {
         <div className="py-4 d-flex align-items-center justify-content-center">
             <div className="osahan-started pt-2 text-center">
                 <img
-                    src="img/sign-in-pana.svg"
+                    src={landingimg}
                     className="img-fluid mb-2 mt-5 col-7 mx-auto"
                 />
                 <div className="head py-4 px-4 text-center">

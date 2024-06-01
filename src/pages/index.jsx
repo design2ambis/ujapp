@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import ujgif from "../../uj.gif"
 
 const Index = () => {
     const token = localStorage.getItem("token");
@@ -14,7 +15,7 @@ const Index = () => {
             >
                 <div className="text-center">
                     <Link to="/landing">
-                        <img src="uj.gif" className="img-fluid rounded-3" />
+                        <img src={ujgif} className="img-fluid rounded-3" />
                     </Link>
                     <br />
                     <div className="spinner" />

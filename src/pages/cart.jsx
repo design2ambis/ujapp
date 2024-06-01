@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import SideNavbar from '../components/sideNavbar';
 import Swal from 'sweetalert2';
+import empty from "../../img/empty.svg"
 
 
 const Cart = () => {
@@ -259,7 +260,7 @@ const Cart = () => {
           <>
             <div id="nodata" className="p-3 d-flex align-items-center justify-content-center vh-100 flex-column">
               <div className="text-center mb-4">
-                <img src="img/empty.svg" alt="#" className="col-12 img-fluid px-5" />
+                <img src={empty} alt="#" className="col-12 img-fluid px-5" />
               </div>
               <div className="text-center">
                 <h4>Your Cart is Empty</h4>

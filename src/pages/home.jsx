@@ -98,9 +98,9 @@ const Home = () => {
           </h4>
           <div className="ms-auto d-flex align-items-center">
             {/*<a href="cart.php" class="me-3 text-dark fs-5"><i class="bi bi-basket"></i></a>*/}
-            <a href="#!" data-bs-toggle="modal" data-bs-target="#barcodeModal" className="me-3 text-dark fs-5">
+            {/* <a href="#!" data-bs-toggle="modal" data-bs-target="#barcodeModal" className="me-3 text-dark fs-5">
               <i className="bi bi-qr-code-scan" />
-            </a>
+            </a> */}
             <a className="toggle osahan-toggle fs-4 text-dark ms-auto" href="#" onClick={openSidebar}>
               <i className="bi bi-list" />
             </a>
